@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useProducts, Product } from '@/contexts/ProductContext';
+import { Product } from '@/contexts/ProductContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useProductForm } from '@/hooks/useProductForm';
 
 /**
  * Design: Minimalismo Corporativo Sofisticado
@@ -18,45 +18,10 @@ interface ProductFormProps {
 }
 
 export default function ProductForm({ product, onClose }: ProductFormProps) {
-  const { addProduct, updateProduct } = useProducts();
-  const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    category: '',
+  const { formData, handleChange, handleSubmit, isEditing } = useProductForm({
+    product,
+    onClose,
   });
-
-  useEffect(() => {
-    if (product) {
-      setFormData({
-        name: product.name,
-        price: product.price.toString(),
-        category: product.category,
-      });
-    }
-  }, [product]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.name || !formData.price || !formData.category) {
-      alert('Por favor, preencha todos os campos');
-      return;
-    }
-
-    const productData = {
-      name: formData.name,
-      price: parseFloat(formData.price),
-      category: formData.category,
-    };
-
-    if (product) {
-      updateProduct(product.id, productData);
-    } else {
-      addProduct(productData);
-    }
-
-    onClose();
-  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -65,7 +30,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
           className="text-2xl font-bold mb-6 text-foreground"
           style={{ fontFamily: 'Poppins' }}
         >
-          {product ? 'Editar Produto' : 'Criar Novo Produto'}
+          {isEditing ? 'Editar Produto' : 'Criar Novo Produto'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -82,7 +47,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
               data-testid="product-name-input"
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => handleChange('name', e.target.value)}
               placeholder="Ex: Laptop"
               className="w-full"
               style={{ fontFamily: 'Inter' }}
@@ -103,7 +68,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
               type="number"
               step="0.01"
               value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              onChange={(e) => handleChange('price', e.target.value)}
               placeholder="Ex: 1200.00"
               className="w-full"
               style={{ fontFamily: 'Inter' }}
@@ -123,7 +88,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
               data-testid="product-category-input"
               type="text"
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              onChange={(e) => handleChange('category', e.target.value)}
               placeholder="Ex: Eletrônicos"
               className="w-full"
               style={{ fontFamily: 'Inter' }}

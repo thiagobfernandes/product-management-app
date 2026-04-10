@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import ProductList from '@/components/ProductList';
 import ProductForm from '@/components/ProductForm';
 import { Button } from '@/components/ui/button';
-import { Product } from '@/contexts/ProductContext';
+import { useProductsPage } from '@/hooks/useProductsPage';
 
 /**
  * Design: Minimalismo Corporativo Sofisticado
@@ -14,18 +13,13 @@ import { Product } from '@/contexts/ProductContext';
  */
 
 export default function Products() {
-  const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
-
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-    setShowForm(true);
-  };
-
-  const handleCloseForm = () => {
-    setShowForm(false);
-    setEditingProduct(undefined);
-  };
+  const {
+    showForm,
+    editingProduct,
+    handleEdit,
+    handleCreate,
+    handleCloseForm,
+  } = useProductsPage();
 
   return (
     <div className="min-h-screen bg-background">
@@ -41,10 +35,7 @@ export default function Products() {
           </h1>
           <Button
             data-testid="create-product-button"
-            onClick={() => {
-              setEditingProduct(undefined);
-              setShowForm(true);
-            }}
+            onClick={handleCreate}
             className="bg-primary text-primary-foreground font-semibold px-6 py-2"
             style={{ fontFamily: 'Poppins' }}
           >
